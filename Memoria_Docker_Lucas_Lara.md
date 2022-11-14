@@ -94,7 +94,7 @@ El resultado se muestra en la siguiente imagen:
 Finalmente ya podemos hacer el push de nuestra imagen Docker local para su despliegue en Azure con el siguiente comando:
 
 ```
-docker push miPlanServicio.azurecr.io/bulletinboard:v1
+docker push planserviciolucas.azurecr.io/bulletinboard:v1
 ```
 
 El resultado se muestra en la siguiente imagen:
