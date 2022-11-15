@@ -129,8 +129,8 @@ El resultado se muestra en la siguiente imagen:
 Finalmente ya podemos hacer el push de las imagenes Docker para su despliegue en Azure con el siguiente comando:
 
 ```
-docker push myserviceplan.azurecr.io/wordpress:latest
-docker push myserviceplan.azurecr.io/mysql:5.7
+docker push serviciolucasics.azurecr.io/wordpress:latest
+docker push serviciolucasics.azurecr.io/mysql:5.7
 ```
 
 El resultado se muestra en la siguiente imagen:
@@ -139,6 +139,83 @@ El resultado se muestra en la siguiente imagen:
 <image src="capturas/pushmysql.png">
 
 ---
-## Creación del contenedor con la imagen recién subida a Azure
+## Docker compose
 ---
+El siguiente paso es crear el archivo **docker-compose.yml** con las imágenes creadas y donde se indican los puertos y algunas credenciales como el usuario y contraseña de wordpress y de la base de datos. Tiene el siguiente contenido:
 
+```
+services:
+   db:
+     image: mysql:5.7
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: 1234
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: lucas
+       MYSQL_PASSWORD: 1234
+
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - "8000:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: lucas
+       WORDPRESS_DB_PASSWORD: 1234
+volumes:
+    db_data:
+```
+---
+## Creación del app service y container
+---
+Con la siguiente orden creamos el app service asociado al grupo de recursos creado previamente:
+
+```
+az appservice plan create --name weblucas \
+--resource-group recursos \
+--sku B1 \
+--is-linux
+```
+Este es el resultado de la ejecución:
+
+<image src="capturas/appservice.png">
+
+Y seguidamente creamos el contenedor que contiene dos servicios con las dos imágenes
+anteriormente creadas:
+
+```
+az webapp create -n weblucaslara -p weblucas -g recursos --multicontainer-config-file docker-compose.yml --multicontainer-config-type compose
+```
+
+El resultado se muestra a continuación:
+
+<image src="capturas/webapp.png">
+
+Y como vemos se muestra en el portal de azure en el apartado *App Services*:
+
+<image src="capturas/appserviceportal.png">
+
+Antes de lanzar la aplicación vamos a ajustar la configuración del contenedor con el siguiente comando:
+
+```
+az webapp config container set -p [serviceplanpassword] -u serviciolucasics -r serviciolucasics.azurecr.io -n weblucaslara -g recursos
+```
+
+<image src="capturas/webapp-config.png">
+
+---
+## Visualizar la página
+---
+Si accedemos al link que se muestra a continuación podemos ver el resultado de esta práctica:
+> https://weblucaslara.azurewebsites.net
+
+<image src="capturas/result1.png">
+
+Dentro del portal de azure, si accedemos a *Registros de contenedor > Repositorios* podemos ver las imágenes de nuestro servicio:
+
+<image src="capturas/repositorio.png">
