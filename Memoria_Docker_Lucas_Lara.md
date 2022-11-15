@@ -219,3 +219,7 @@ Si accedemos al link que se muestra a continuación podemos ver el resultado de 
 Dentro del portal de azure, si accedemos a *Registros de contenedor > Repositorios* podemos ver las imágenes de nuestro servicio:
 
 <image src="capturas/repositorio.png">
+
+Y para finalizar, una vez completado el proceso de inicio en wordpress ya podemos acceder a nuestra página y añadir aquello que queramos, en mi caso un titular y una nueva entrada, como se muestra en la imagen a continuación:
+
+<image src="capturas/result-final.png">
